@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/home/om/Documents/SkillBounty/src/app/layout\":[\"static/media/d8950eaee33ba742-s.p.woff2\",\"static/media/e210f091ebfac73b-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
