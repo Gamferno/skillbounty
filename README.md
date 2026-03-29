@@ -2,7 +2,7 @@
 
 Decentralised freelance escrow on Stellar Testnet. Posters lock XLM into a Soroban contract; hunters claim, submit work, and funds release on approval — or an on-chain arbitrator resolves disputes. Built with Next.js 14, Freighter wallet, and Tailwind CSS.
 
-**Live demo:** `<your-vercel-url>`  
+**Live demo:** https://skillbounty.pathakom.dev/
 **Video demo:** https://bit.ly/4tjeT1C
 
 ![homepage](assets/homepage.png)
