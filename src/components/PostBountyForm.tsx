@@ -7,19 +7,24 @@ import { buildPostBounty, submitSignedTransaction } from '@/lib/contract'
 import { xlmToStroops, CONTRACT_ADDRESS } from '@/lib/constants'
 import { TxState } from '@/types/bounty'
 import { TransactionToast } from './TransactionToast'
+import { useXlmPrice } from '@/hooks/useXlmPrice'
 
 const contractNotDeployed = !CONTRACT_ADDRESS
 
 export function PostBountyForm() {
   const router = useRouter()
   const { address, signTransaction, refreshBalance } = useWallet()
+const AVAILABLE_TAGS = ['Design', 'Frontend', 'Backend', 'Writing', 'Research', 'Video', 'Marketing', 'Other']
+
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [reward, setReward] = useState('')
+  const [tags, setTags] = useState<string[]>([])
   const [deadlineHours, setDeadlineHours] = useState(72)
   const [tx, setTx] = useState<TxState>({ status: 'idle' })
 
-  const estimatedUsd = reward ? (parseFloat(reward) * 0.11).toFixed(2) : null
+  const xlmPrice = useXlmPrice()
+  const estimatedUsd = reward && xlmPrice ? (parseFloat(reward) * xlmPrice).toFixed(2) : null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,6 +39,7 @@ export function PostBountyForm() {
         description,
         rewardStroops,
         BigInt(deadlineHours),
+        tags,
       )
       const signedXdr = await signTransaction(xdr)
       const hash = await submitSignedTransaction(signedXdr)
@@ -98,6 +104,38 @@ stellar contract deploy \\
             placeholder="Describe the work required, deliverables, acceptance criteria…"
             className="font-special w-full px-4 py-3 rounded bg-wood-800 border-2 border-wood-700/50 shadow-inner focus:border-wanted focus:ring-1 focus:ring-wanted text-cream placeholder:text-cream/30 outline-none transition text-sm resize-none scrollbar-none"
           />
+        </div>
+
+        {/* Tags */}
+        <div>
+          <label className="block text-base font-rye tracking-wider text-cream/90 mb-2">
+            Skill Tags (Select up to 3)
+          </label>
+          <div className="flex flex-wrap gap-3">
+            {AVAILABLE_TAGS.map((tag) => {
+              const isSelected = tags.includes(tag)
+              const isDisabled = !isSelected && tags.length >= 3
+              
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) setTags(tags.filter((t) => t !== tag))
+                    else if (!isDisabled) setTags([...tags, tag])
+                  }}
+                  disabled={isDisabled}
+                  className={`px-3 py-1.5 rounded text-sm font-rye tracking-wider transition-all duration-200 border-2 shadow-sm uppercase ${
+                    isSelected
+                      ? 'bg-wanted/20 border-wanted text-wanted rotate-1 scale-105'
+                      : 'bg-wood-800 border-wood-700/50 text-cream/70 hover:border-wood-600 disabled:opacity-40 disabled:hover:border-wood-700/50'
+                  }`}
+                >
+                  {tag}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Reward */}

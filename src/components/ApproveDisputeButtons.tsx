@@ -6,7 +6,7 @@ import { buildApproveWork, buildDisputeWork, submitSignedTransaction } from '@/l
 import { useWallet } from '@/context/WalletContext'
 import { CountdownTimer } from './CountdownTimer'
 import { TransactionToast } from './TransactionToast'
-import { ShieldAlert, CheckCircle2 } from 'lucide-react'
+import { ShieldAlert, CheckCircle2, ExternalLink, Zap } from 'lucide-react'
 
 interface ApproveDisputeButtonsProps {
   bounty: Bounty
@@ -59,7 +59,7 @@ export function ApproveDisputeButtons({ bounty, onSuccess }: ApproveDisputeButto
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 font-special text-sm text-ink font-bold hover:underline break-all bg-ink/5 px-2 py-1 rounded"
             >
-              🔗 {bounty.work_url} ↗
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" /> {bounty.work_url}
             </a>
           )}
         </div>
@@ -71,8 +71,8 @@ export function ApproveDisputeButtons({ bounty, onSuccess }: ApproveDisputeButto
               deadlineHours={bounty.deadline_hours}
             />
             {hoursLeft !== null && hoursLeft < 24 && hoursLeft > 0 && (
-              <p className="mt-2 text-xs font-special text-blood font-bold bg-blood/10 border border-blood/20 rounded p-2">
-                ⚡ Under 24 hours left — if you don&apos;t respond, XLM auto-releases to the hunter.
+              <p className="mt-2 text-xs font-special text-blood font-bold bg-blood/10 border border-blood/20 rounded p-2 flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 shrink-0" /> Under 24 hours left — if you don&apos;t respond, XLM auto-releases to the hunter.
               </p>
             )}
           </div>

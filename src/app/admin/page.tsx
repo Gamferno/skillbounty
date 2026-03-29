@@ -8,6 +8,7 @@ import { Bounty, BountyStatus } from '@/types/bounty'
 import { useWallet } from '@/context/WalletContext'
 import { ARBITRATOR_ADDRESS } from '@/lib/constants'
 import { ArbitrationPanel } from '@/components/ArbitrationPanel'
+import { DoorOpen, Skull, ShieldCheck } from 'lucide-react'
 
 export default function AdminPage() {
   const { address } = useWallet()
@@ -33,7 +34,7 @@ export default function AdminPage() {
   if (!address) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center wood-panel rounded p-12 border-4 border-wood-900 shadow-2xl">
-        <span className="text-6xl mb-6">🚪</span>
+        <DoorOpen className="w-16 h-16 mb-6 text-cream/60" />
         <h1 className="text-4xl font-rye tracking-widest text-cream mb-4">Saloon Doors Locked</h1>
         <p className="font-special text-cream/70 text-lg">Draw your wallet to enter the Sheriff&apos;s Office.</p>
       </div>
@@ -44,7 +45,7 @@ export default function AdminPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center wood-panel rounded p-12 border-4 border-wood-900 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-blood/10 pointer-events-none" />
-        <span className="text-6xl mb-6 drop-shadow-lg text-blood z-10">☠</span>
+        <Skull className="w-16 h-16 mb-6 drop-shadow-lg text-blood z-10" />
         <h1 className="text-4xl font-rye tracking-widest text-cream mb-4 z-10">Turn Back, Partner</h1>
         <p className="font-special text-cream/80 text-lg z-10">
           This office is strictly for the town Sheriff. Lookin&apos; at you, stranger.
@@ -59,7 +60,7 @@ export default function AdminPage() {
       <div className="wood-panel p-8 rounded border-4 border-wood-900 shadow-xl relative">
         <div className="absolute top-0 left-1/2 -ml-3 -mt-4 w-6 h-6 bg-wood-900 rounded-full border-2 border-wood-700 shadow-sm" />
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-wanted/20 border border-wanted text-wanted text-sm font-rye mb-6 font-bold shadow-sm uppercase tracking-widest">
-          ⭐ Sheriff on Duty
+          <ShieldCheck className="w-4 h-4" /> Sheriff on Duty
         </div>
         <h1 className="text-4xl font-rye tracking-widest text-cream mb-3 drop-shadow-md">Sheriff&apos;s Office</h1>
         <p className="font-special text-cream/80 text-lg leading-relaxed max-w-lg">

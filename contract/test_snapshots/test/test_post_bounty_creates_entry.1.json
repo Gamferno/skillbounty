@@ -75,6 +75,13 @@
                 },
                 {
                   "u64": 72
+                },
+                {
+                  "vec": [
+                    {
+                      "string": "Frontend"
+                    }
+                  ]
                 }
               ]
             }
@@ -291,6 +298,18 @@
                         "symbol": "submitted_at"
                       },
                       "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "tags"
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "string": "Frontend"
+                          }
+                        ]
+                      }
                     },
                     {
                       "key": {
@@ -1032,6 +1051,13 @@
                 },
                 {
                   "u64": 72
+                },
+                {
+                  "vec": [
+                    {
+                      "string": "Frontend"
+                    }
+                  ]
                 }
               ]
             }
@@ -1127,6 +1153,42 @@
               }
             ],
             "data": "void"
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "Bounty"
+              },
+              {
+                "symbol": "post"
+              }
+            ],
+            "data": {
+              "vec": [
+                {
+                  "u64": 1
+                },
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                },
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 10000000
+                  }
+                }
+              ]
+            }
           }
         }
       },
@@ -1272,6 +1334,18 @@
                     "symbol": "submitted_at"
                   },
                   "val": "void"
+                },
+                {
+                  "key": {
+                    "symbol": "tags"
+                  },
+                  "val": {
+                    "vec": [
+                      {
+                        "string": "Frontend"
+                      }
+                    ]
+                  }
                 },
                 {
                   "key": {

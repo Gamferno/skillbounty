@@ -31,6 +31,12 @@ function getContract(): Contract {
 // ─── ScVal helpers ───────────────────────────────────────────────────────────
 
 function parseBounty(raw: Record<string, unknown>): Bounty {
+  const parseTag = (t: unknown): string => {
+    if (typeof t === 'string') return t
+    if (typeof t === 'object' && t !== null && 'toString' in t) return (t as any).toString()
+    return String(t)
+  }
+  
   return {
     id: BigInt(raw.id as number),
     poster: raw.poster as string,
@@ -40,6 +46,7 @@ function parseBounty(raw: Record<string, unknown>): Bounty {
     reward: BigInt(raw.reward as number),
     work_url: raw.work_url ? (raw.work_url as string) : null,
     status: Array.isArray(raw.status) ? (raw.status[0] as BountyStatus) : (raw.status as BountyStatus),
+    tags: Array.isArray(raw.tags) ? raw.tags.map(parseTag) : [],
     created_at: BigInt(raw.created_at as number),
     submitted_at: raw.submitted_at ? BigInt(raw.submitted_at as number) : null,
     deadline_hours: BigInt(raw.deadline_hours as number),
@@ -124,6 +131,79 @@ export async function fetchBountiesByHunter(hunter: string): Promise<Bounty[]> {
   }
 }
 
+// ─── Events (Recent Activity) ───────────────────────────────────────────────
+
+export interface ContractEvent {
+  id: string
+  type: string
+  bountyId: number
+  actor: string
+  ledger: number
+}
+
+export async function fetchRecentContractEvents(): Promise<ContractEvent[]> {
+  try {
+    const server = getRpc()
+    const contract = getContract()
+    const latest = await server.getLatestLedger()
+    const startLedger = Math.max(1, latest.sequence - 5000)
+
+    const response = await server.getEvents({
+      startLedger,
+      filters: [{ type: 'contract', contractIds: [contract.contractId()] }],
+      limit: 50,
+    })
+
+    const parsed: ContractEvent[] = []
+
+    for (const evt of response.events) {
+      try {
+        if (evt.type !== 'contract') continue
+        
+        // topics[0] is always "Bounty" symbol in our contract
+        // topics[1] is the action symbol: "post", "claim", "submit", "approve", "dispute", "timeout", "arb_win", "arb_loss"
+        const scValAction = evt.topic[1]
+        if (!scValAction) continue
+        
+        const actionStr = scValToNative(scValAction) as string
+        
+        // value is a tuple containing the event payload. Usually (id, address, ...)
+        const dataVal = scValToNative(evt.value) as unknown[]
+        if (!Array.isArray(dataVal) || dataVal.length < 1) continue
+        
+        const bountyId = Number(dataVal[0])
+        const actorScVal = dataVal[1] // Usually Address
+        const actor = typeof actorScVal === 'string' ? actorScVal : 'Unknown'
+
+        // We can make actor parsed based on our Rust events:
+        // post: (id, poster, reward) -> dataVal[1] is poster
+        // claim: (id, hunter) -> dataVal[1] is hunter
+        // submit: (id, hunter) -> dataVal[1] is hunter
+        // approve: (id, poster, hunter, reward) -> dataVal[1] is poster or hunter (wait: rust is `(bounty_id, poster, hunter, bounty.reward)`)
+        // dispute: (id, poster, hunter) -> dataVal[1] is poster
+        // timeout: (id, hunter, reward) -> dataVal[1] is hunter
+        // arb_win: (id, hunter, reward) -> dataVal[1] is hunter
+        // arb_loss: (id, poster, reward) -> dataVal[1] is poster
+        
+        parsed.push({
+          id: evt.id,
+          type: actionStr,
+          bountyId,
+          actor,
+          ledger: evt.ledger,
+        })
+      } catch (err) {
+        // failed to parse one event, skip
+      }
+    }
+
+    return parsed.reverse() // newest first
+  } catch (err) {
+    console.error('Failed to fetch events', err)
+    return []
+  }
+}
+
 // ─── Contract invocation helpers (return unsigned XDR for wallet to sign) ────
 
 export async function buildPostBounty(
@@ -132,10 +212,15 @@ export async function buildPostBounty(
   description: string,
   rewardStroops: bigint,
   deadlineHours: bigint,
+  tags: string[],
 ): Promise<string> {
   const server = getRpc()
   const contract = getContract()
   const account = await server.getAccount(poster)
+
+  const tagsScVal = xdr.ScVal.scvVec(
+    tags.map(tag => nativeToScVal(tag, { type: 'string' }))
+  )
 
   const tx = new TransactionBuilder(account, {
     fee: BASE_FEE,
@@ -149,6 +234,7 @@ export async function buildPostBounty(
         nativeToScVal(description, { type: 'string' }),
         nativeToScVal(rewardStroops, { type: 'i128' }),
         nativeToScVal(deadlineHours, { type: 'u64' }),
+        tagsScVal,
       ),
     )
     .setTimeout(30)

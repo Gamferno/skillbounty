@@ -18,6 +18,7 @@ export interface Bounty {
   reward: bigint // stroops (1 XLM = 10_000_000 stroops)
   work_url: string | null
   status: BountyStatus
+  tags: string[]
   created_at: bigint
   submitted_at: bigint | null
   deadline_hours: bigint

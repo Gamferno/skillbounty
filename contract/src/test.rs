@@ -47,6 +47,7 @@ fn test_post_bounty_creates_entry() {
         &make_string(&env, "Build a nice UI"),
         &10_000_000i128,
         &72u64,
+        &soroban_sdk::vec![&env, make_string(&env, "Frontend")],
     );
 
     assert_eq!(id, 1u64);
@@ -72,6 +73,7 @@ fn test_claim_bounty_changes_status() {
         &make_string(&env, "All green"),
         &10_000_000i128,
         &72u64,
+        &soroban_sdk::vec![&env, make_string(&env, "Backend")],
     );
 
     client.claim_bounty(&hunter, &id);
@@ -97,6 +99,7 @@ fn test_approve_work_releases_funds() {
         &make_string(&env, "SVG needed"),
         &10_000_000i128,
         &72u64,
+        &soroban_sdk::vec![&env, make_string(&env, "Design")],
     );
 
     client.claim_bounty(&hunter, &id);
@@ -126,6 +129,7 @@ fn test_timeout_releases_to_hunter() {
         &make_string(&env, "Markdown"),
         &10_000_000i128,
         &1u64, // 1-hour deadline for testing
+        &soroban_sdk::vec![&env, make_string(&env, "Writing")],
     );
 
     client.claim_bounty(&hunter, &id);
@@ -157,6 +161,7 @@ fn test_only_arbitrator_can_arbitrate() {
         &make_string(&env, "Critical"),
         &10_000_000i128,
         &72u64,
+        &soroban_sdk::vec![&env, make_string(&env, "Other")],
     );
 
     client.claim_bounty(&hunter, &id);

@@ -75,6 +75,13 @@
                 },
                 {
                   "u64": 72
+                },
+                {
+                  "vec": [
+                    {
+                      "string": "Backend"
+                    }
+                  ]
                 }
               ]
             }
@@ -315,6 +322,18 @@
                         "symbol": "submitted_at"
                       },
                       "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "tags"
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "string": "Backend"
+                          }
+                        ]
+                      }
                     },
                     {
                       "key": {
@@ -1089,6 +1108,13 @@
                 },
                 {
                   "u64": 72
+                },
+                {
+                  "vec": [
+                    {
+                      "string": "Backend"
+                    }
+                  ]
                 }
               ]
             }
@@ -1193,6 +1219,42 @@
       "event": {
         "ext": "v0",
         "contract_id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "Bounty"
+              },
+              {
+                "symbol": "post"
+              }
+            ],
+            "data": {
+              "vec": [
+                {
+                  "u64": 1
+                },
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                },
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 10000000
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000001",
         "type_": "diagnostic",
         "body": {
           "v0": {
@@ -1237,6 +1299,36 @@
                 },
                 {
                   "u64": 1
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "Bounty"
+              },
+              {
+                "symbol": "claim"
+              }
+            ],
+            "data": {
+              "vec": [
+                {
+                  "u64": 1
+                },
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
                 }
               ]
             }
@@ -1385,6 +1477,18 @@
                     "symbol": "submitted_at"
                   },
                   "val": "void"
+                },
+                {
+                  "key": {
+                    "symbol": "tags"
+                  },
+                  "val": {
+                    "vec": [
+                      {
+                        "string": "Backend"
+                      }
+                    ]
+                  }
                 },
                 {
                   "key": {

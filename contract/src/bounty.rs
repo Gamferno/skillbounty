@@ -1,4 +1,4 @@
-use soroban_sdk::{contracttype, Address, String};
+use soroban_sdk::{contracttype, Address, String, Vec};
 
 #[contracttype]
 #[derive(Clone, PartialEq, Debug)]
@@ -22,6 +22,7 @@ pub struct Bounty {
     pub reward: i128, // in stroops (1 XLM = 10_000_000)
     pub work_url: Option<String>,
     pub status: BountyStatus,
+    pub tags: Vec<String>,
     pub created_at: u64,
     pub submitted_at: Option<u64>,
     pub deadline_hours: u64, // default 72

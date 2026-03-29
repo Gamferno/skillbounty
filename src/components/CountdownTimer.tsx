@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Scale, Flame, Clock } from 'lucide-react'
 
 interface CountdownTimerProps {
   submittedAt: bigint // epoch seconds
@@ -25,7 +26,9 @@ export function CountdownTimer({ submittedAt, deadlineHours }: CountdownTimerPro
 
   if (remaining <= 0) {
     return (
-      <span className="text-red-400 text-sm font-medium">⚠ Deadline passed — auto-release eligible</span>
+      <span className="text-blood text-sm font-rye font-medium animate-pulse tracking-wider flex items-center gap-1.5">
+        <Scale className="w-4 h-4 inline-block" /> Deadline passed — auto-release eligible
+      </span>
     )
   }
 
@@ -34,14 +37,22 @@ export function CountdownTimer({ submittedAt, deadlineHours }: CountdownTimerPro
   const seconds = remaining % 60
 
   const isUrgent = hours < 24
-  const textColor = isUrgent ? 'text-orange-400' : 'text-slate-300'
+  const isCritical = hours < 6
+
+  const textColor = isCritical
+    ? 'text-blood animate-pulse font-bold scale-105'
+    : isUrgent
+      ? 'text-wanted font-bold text-shadow-sm'
+      : 'text-ink-light'
 
   return (
-    <div className="flex items-center gap-1.5">
-      <span className={`text-xs ${textColor} font-medium`}>
-        {isUrgent && '⚡ '}Time remaining:
+    <div className="flex items-center gap-1.5 transition-all duration-300">
+      <span className={`text-xs ${textColor} font-rye tracking-widest uppercase flex items-center gap-1`}>
+        {isCritical && <Flame className="w-3.5 h-3.5" />}
+        {isUrgent && !isCritical && <Clock className="w-3.5 h-3.5" />}
+        Time remaining:
       </span>
-      <span className={`font-mono font-bold text-sm ${textColor}`}>
+      <span className={`font-special tracking-widest text-sm ${textColor}`}>
         {pad(hours)}:{pad(minutes)}:{pad(seconds)}
       </span>
     </div>

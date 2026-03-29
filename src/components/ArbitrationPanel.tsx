@@ -6,7 +6,7 @@ import { buildArbitrate, submitSignedTransaction } from '@/lib/contract'
 import { useWallet } from '@/context/WalletContext'
 import { stroopsToXlm, truncateAddress } from '@/lib/constants'
 import { TransactionToast } from './TransactionToast'
-import { Scale, RotateCcw } from 'lucide-react'
+import { Scale, RotateCcw, Palmtree, ExternalLink } from 'lucide-react'
 
 interface ArbitrationPanelProps {
   bounties: Bounty[]
@@ -40,7 +40,7 @@ export function ArbitrationPanel({ bounties, onResolved }: ArbitrationPanelProps
   if (bounties.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center wood-panel rounded border-[3px] border-wood-900 shadow-2xl">
-        <span className="text-5xl mb-4 drop-shadow-md">🏜️</span>
+        <Palmtree className="w-14 h-14 mb-4 drop-shadow-md text-cream/50" />
         <p className="font-rye text-2xl tracking-widest text-cream mb-2">No disputed bounties</p>
         <p className="font-special text-cream/60">All clear — tumbleweeds rollin&apos; through.</p>
       </div>
@@ -98,7 +98,7 @@ export function ArbitrationPanel({ bounties, onResolved }: ArbitrationPanelProps
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 font-special text-sm text-ink font-bold hover:underline mb-5 block bg-ink/5 px-2 py-1 rounded w-fit"
                 >
-                  🔗 View submitted work ↗
+                  <ExternalLink className="w-3.5 h-3.5 shrink-0" /> View submitted work
                 </a>
               )}
 

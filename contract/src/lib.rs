@@ -42,8 +42,10 @@ impl SkillBountyContract {
         description: String,
         reward: i128,
         deadline_hours: u64,
+        tags: Vec<String>,
     ) -> u64 {
         poster.require_auth();
+        assert!(tags.len() <= 3, "too many tags");
 
         let contract_address = env.current_contract_address();
         let native_token = token::Client::new(&env, &get_native_token(&env));
@@ -55,18 +57,21 @@ impl SkillBountyContract {
         let now = env.ledger().timestamp();
         let bounty = Bounty {
             id,
-            poster,
+            poster: poster.clone(),
             hunter: None,
             title,
             description,
             reward,
             work_url: None,
             status: BountyStatus::Open,
+            tags,
             created_at: now,
             submitted_at: None,
             deadline_hours,
         };
         set_bounty(&env, &bounty);
+        
+        env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("post")), (id, poster, reward));
         id
     }
 
@@ -78,9 +83,11 @@ impl SkillBountyContract {
         assert!(bounty.status == BountyStatus::Open, "bounty is not open");
         assert!(bounty.poster != hunter, "poster cannot claim own bounty");
 
-        bounty.hunter = Some(hunter);
+        bounty.hunter = Some(hunter.clone());
         bounty.status = BountyStatus::InProgress;
         set_bounty(&env, &bounty);
+
+        env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("claim")), (bounty_id, hunter));
     }
 
     /// Hunter submits work URL — starts the deadline countdown.
@@ -89,12 +96,14 @@ impl SkillBountyContract {
 
         let mut bounty = get_bounty(&env, bounty_id).expect("bounty not found");
         assert!(bounty.status == BountyStatus::InProgress, "bounty must be in progress");
-        assert!(bounty.hunter == Some(hunter), "only the assigned hunter can submit work");
+        assert!(bounty.hunter == Some(hunter.clone()), "only the assigned hunter can submit work");
 
         bounty.work_url = Some(work_url);
         bounty.status = BountyStatus::Submitted;
         bounty.submitted_at = Some(env.ledger().timestamp());
         set_bounty(&env, &bounty);
+
+        env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("submit")), (bounty_id, hunter));
     }
 
     /// Poster approves work — releases XLM to hunter.
@@ -111,6 +120,8 @@ impl SkillBountyContract {
 
         bounty.status = BountyStatus::Completed;
         set_bounty(&env, &bounty);
+
+        env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("approve")), (bounty_id, poster, hunter, bounty.reward));
     }
 
     /// Poster disputes work — freezes funds, flags for arbitration.
@@ -123,6 +134,9 @@ impl SkillBountyContract {
 
         bounty.status = BountyStatus::Disputed;
         set_bounty(&env, &bounty);
+
+        let hunter = bounty.hunter.clone().expect("no hunter assigned");
+        env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("dispute")), (bounty_id, poster, hunter));
     }
 
     /// Auto-release: callable by anyone after the deadline passes with no response.
@@ -141,6 +155,8 @@ impl SkillBountyContract {
 
         bounty.status = BountyStatus::Completed;
         set_bounty(&env, &bounty);
+
+        env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("timeout")), (bounty_id, hunter, bounty.reward));
     }
 
     /// Arbitrator only: resolve dispute in favour of hunter or poster.
@@ -158,9 +174,11 @@ impl SkillBountyContract {
             release_to(&env, &hunter, bounty.reward);
             increment_reputation(&env, &hunter);
             bounty.status = BountyStatus::Completed;
+            env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("arb_win")), (bounty_id, hunter, bounty.reward));
         } else {
             release_to(&env, &bounty.poster, bounty.reward);
             bounty.status = BountyStatus::Refunded;
+            env.events().publish((soroban_sdk::symbol_short!("Bounty"), soroban_sdk::symbol_short!("arb_loss")), (bounty_id, bounty.poster.clone(), bounty.reward));
         }
         set_bounty(&env, &bounty);
     }
