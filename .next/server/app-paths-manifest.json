@@ -1,7 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/bounty/[id]/page": "app/bounty/[id]/page.js",
-  "/post/page": "app/post/page.js",
-  "/profile/[address]/page": "app/profile/[address]/page.js"
-}
