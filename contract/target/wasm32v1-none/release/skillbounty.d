@@ -1,1 +1,0 @@
-/home/om/Documents/SkillBounty/contract/target/wasm32v1-none/release/skillbounty.wasm: /home/om/Documents/SkillBounty/contract/src/bounty.rs /home/om/Documents/SkillBounty/contract/src/lib.rs /home/om/Documents/SkillBounty/contract/src/storage.rs
