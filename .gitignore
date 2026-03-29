@@ -25,3 +25,13 @@ tsconfig.tsbuildinfo
 
 # Vercel
 .vercel
+
+# Rust / Soroban contract
+contract/target/
+
+# Scratch files
+test-fetch.js
+test_alignment.js
+contract/err.txt
+contract/out.txt
+contract/contract_id.txt
