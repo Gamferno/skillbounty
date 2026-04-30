@@ -1,9 +1,10 @@
-# SkillBounty - Trustless bounty board on Stellar Soroban
+# SkillBounty — Trustless bounty board on Stellar Soroban
 
 Decentralised freelance escrow on Stellar Testnet. Posters lock XLM into a Soroban contract; hunters claim, submit work, and funds release on approval — or an on-chain arbitrator resolves disputes. Built with Next.js 14, Freighter wallet, and Tailwind CSS.
 
-**Live demo:** https://skillbounty.pathakom.dev/
+[![CI](https://github.com/Gamferno/skillbounty/actions/workflows/ci.yml/badge.svg)](https://github.com/Gamferno/skillbounty/actions/workflows/ci.yml)
 
+**Live demo:** https://skillbounty.pathakom.dev  
 **Video demo:** https://bit.ly/4tjeT1C
 
 ![homepage](assets/homepage.png)
@@ -33,8 +34,8 @@ Next.js 14 (App Router) · Stellar Testnet + Soroban · Freighter wallet · Tail
 ## Getting started
 
 ```bash
-git clone https://github.com/your-username/SkillBounty.git
-cd SkillBounty
+git clone https://github.com/Gamferno/skillbounty.git
+cd skillbounty
 npm install
 ```
 
@@ -44,13 +45,36 @@ Create `.env.local`:
 NEXT_PUBLIC_STELLAR_NETWORK=TESTNET
 NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org
 NEXT_PUBLIC_SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
-NEXT_PUBLIC_CONTRACT_ADDRESS=<your_deployed_contract_address>
-NEXT_PUBLIC_ARBITRATOR_ADDRESS=<arbitrator_stellar_address>
+NEXT_PUBLIC_CONTRACT_ADDRESS=CBLVYIF776MUZLQXUWJOFWS3LBYGVZXSQSJUNHB2M66Q6J26Q5XSELHA
+NEXT_PUBLIC_ARBITRATOR_ADDRESS=GDEBVTOA3BOWI7PNO3SBTJDRB2W3SV4AEFRHXTHWZP7R76I2WAZRHO2X
 ```
 
 ```bash
 npm run dev
 ```
+
+---
+
+## Mobile responsive
+
+The UI uses Tailwind CSS responsive utilities (`sm:`, `md:`, `lg:`) throughout. All pages — bounty board, bounty detail, post, profile, and leaderboard — are fully usable on mobile viewports.
+
+![mobile view](assets/mobile_screenshot.png)
+
+---
+
+## CI/CD pipeline
+
+GitHub Actions runs on every push and pull request to `main`:
+
+| Job | Steps |
+|---|---|
+| **Frontend** | `npm ci` → `npm run lint` → `npm test` → `npm run build` |
+| **Contract** | Install Rust + `wasm32` target → `cargo test --locked` |
+
+[![CI](https://github.com/Gamferno/skillbounty/actions/workflows/ci.yml/badge.svg)](https://github.com/Gamferno/skillbounty/actions/workflows/ci.yml)
+
+Workflow file: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
 ---
 
@@ -103,16 +127,63 @@ Source: [`contract/`](./contract/)
 
 | Function | Description |
 |---|---|
+| `initialize` | One-time setup: set arbitrator wallet + native XLM token address |
 | `post_bounty` | Create bounty, lock XLM into escrow |
 | `claim_bounty` | Hunter claims an open bounty |
 | `submit_work` | Hunter submits work URL |
 | `approve_work` | Poster releases funds to hunter |
 | `dispute_work` | Poster raises a dispute |
+| `claim_timeout` | Anyone triggers auto-release after review deadline passes |
 | `arbitrate` | Arbitrator rules for hunter or refunds poster |
 | `get_all_bounties` | Read all bounties |
 | `get_reputation` | Get reputation score for an address |
 
-Contract address (Testnet): `<your_contract_address>`
+### Contract addresses (Stellar Testnet)
+
+| Item | Address / Hash |
+|---|---|
+| **SkillBounty contract** | `CBLVYIF776MUZLQXUWJOFWS3LBYGVZXSQSJUNHB2M66Q6J26Q5XSELHA` |
+| **Deployment tx hash** | `38261bd09338cf9e46d41ef7aa3cdf93df2c542ac92f393b10926e35da28de9e` |
+| **Native XLM token (SAC)** | `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
+| **Arbitrator (Sheriff) wallet** | `GDEBVTOA3BOWI7PNO3SBTJDRB2W3SV4AEFRHXTHWZP7R76I2WAZRHO2X` |
+
+Explorer links:
+- [Contract on stellar.expert](https://stellar.expert/explorer/testnet/contract/CBLVYIF776MUZLQXUWJOFWS3LBYGVZXSQSJUNHB2M66Q6J26Q5XSELHA)
+- [Deployment tx on stellar.expert](https://stellar.expert/explorer/testnet/tx/38261bd09338cf9e46d41ef7aa3cdf93df2c542ac92f393b10926e35da28de9e)
+
+### Inter-contract call
+
+`post_bounty` and `approve_work` / `arbitrate` each make a cross-contract call into the **native XLM Stellar Asset Contract (SAC)** via the Soroban `token::Client`:
+
+```rust
+// post_bounty — lock funds into escrow (SkillBounty → XLM SAC)
+let native_token = token::Client::new(&env, &get_native_token(&env));
+native_token.transfer(&poster, &contract_address, &reward);
+
+// approve_work / arbitrate — release funds from escrow (SkillBounty → XLM SAC)
+native_token.transfer(&env.current_contract_address(), recipient, &amount);
+```
+
+Every bounty post and payout is a live inter-contract call: **SkillBounty contract → XLM SAC** (`CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC`).
+
+---
+
+## Deploying to Vercel
+
+1. Push this repo to GitHub (public)
+2. Go to [vercel.com/new](https://vercel.com/new) → **Import** `Gamferno/skillbounty`
+3. Framework: **Next.js** (auto-detected)
+4. Add environment variables:
+
+| Key | Value |
+|---|---|
+| `NEXT_PUBLIC_STELLAR_NETWORK` | `TESTNET` |
+| `NEXT_PUBLIC_HORIZON_URL` | `https://horizon-testnet.stellar.org` |
+| `NEXT_PUBLIC_SOROBAN_RPC_URL` | `https://soroban-testnet.stellar.org` |
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | `CBLVYIF776MUZLQXUWJOFWS3LBYGVZXSQSJUNHB2M66Q6J26Q5XSELHA` |
+| `NEXT_PUBLIC_ARBITRATOR_ADDRESS` | `GDEBVTOA3BOWI7PNO3SBTJDRB2W3SV4AEFRHXTHWZP7R76I2WAZRHO2X` |
+
+5. Click **Deploy** — Vercel auto-builds and assigns your domain
 
 ---
 
@@ -137,8 +208,18 @@ src/
 │   └── constants.ts
 └── __tests__/
     └── skillbounty.test.ts
+contract/
+├── src/
+│   ├── lib.rs        ← main contract
+│   ├── bounty.rs     ← data types
+│   ├── storage.rs    ← on-chain storage helpers
+│   └── test.rs       ← Soroban unit tests
 assets/
-└── wallpaper.jpg
+├── homepage.png
+├── bounty_board.png
+├── bounty.png
+├── hall_of_fame.png
+└── mobile_screenshot.png
 ```
 
 ---
