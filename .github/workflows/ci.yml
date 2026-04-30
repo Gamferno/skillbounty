@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Frontend: lint · test · build ──────────────────────────────────────────
+  frontend:
+    name: Frontend (lint · test · build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test -- --ci --reporters=default --reporters=jest-junit
+        env:
+          NEXT_PUBLIC_STELLAR_NETWORK: TESTNET
+          NEXT_PUBLIC_HORIZON_URL: https://horizon-testnet.stellar.org
+          NEXT_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
+          NEXT_PUBLIC_CONTRACT_ADDRESS: CBLVYIF776MUZLQXUWJOFWS3LBYGVZXSQSJUNHB2M66Q6J26Q5XSELHA
+          NEXT_PUBLIC_ARBITRATOR_ADDRESS: GDEBVTOA3BOWI7PNO3SBTJDRB2W3SV4AEFRHXTHWZP7R76I2WAZRHO2X
+
+      - name: Build (production)
+        run: npm run build
+        env:
+          NEXT_PUBLIC_STELLAR_NETWORK: TESTNET
+          NEXT_PUBLIC_HORIZON_URL: https://horizon-testnet.stellar.org
+          NEXT_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
+          NEXT_PUBLIC_CONTRACT_ADDRESS: CBLVYIF776MUZLQXUWJOFWS3LBYGVZXSQSJUNHB2M66Q6J26Q5XSELHA
+          NEXT_PUBLIC_ARBITRATOR_ADDRESS: GDEBVTOA3BOWI7PNO3SBTJDRB2W3SV4AEFRHXTHWZP7R76I2WAZRHO2X
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-test-results
+          path: junit.xml
+          if-no-files-found: ignore
+
+  # ─── Soroban contract: build · test ─────────────────────────────────────────
+  contract:
+    name: Contract (build · test)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust (stable + wasm32 target)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Rust build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            contract/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('contract/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Run contract unit tests
+        working-directory: contract
+        run: cargo test --locked
