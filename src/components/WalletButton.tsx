@@ -15,17 +15,17 @@ export function WalletButton() {
         id="connect-wallet-btn"
         onClick={connect}
         disabled={connecting}
-        className="wood-sign inline-flex items-center gap-2 px-5 py-2.5 rounded hover:brightness-110 disabled:opacity-60 text-cream text-sm transition-all duration-200"
+        className="wood-sign inline-flex items-center gap-2 px-2.5 sm:px-5 py-2.5 rounded hover:brightness-110 disabled:opacity-60 text-cream text-sm transition-all duration-200"
       >
         {connecting ? (
           <>
             <span className="inline-block w-3 h-3 border-2 border-cream border-t-transparent rounded-full animate-spin" />
-            Riding in...
+            <span className="hidden sm:inline font-rye tracking-wider mt-0.5">Riding in...</span>
           </>
         ) : (
           <>
             <Wallet className="w-4 h-4 text-wanted" />
-            <span className="font-rye tracking-wider mt-0.5">Draw Wallet</span>
+            <span className="hidden sm:inline font-rye tracking-wider mt-0.5">Draw Wallet</span>
           </>
         )}
       </button>
@@ -37,12 +37,13 @@ export function WalletButton() {
       <button
         id="wallet-menu-btn"
         onClick={() => setShowMenu((v) => !v)}
-        className="wood-sign inline-flex items-center gap-2 px-4 py-2 rounded hover:brightness-110 text-cream text-sm transition-all duration-200"
+        className="wood-sign inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 rounded hover:brightness-110 text-cream text-sm transition-all duration-200"
       >
         <span className="w-2 h-2 rounded-full bg-frontier animate-pulse" />
-        <span className="font-special">{truncateAddress(address)}</span>
+        <Wallet className="w-4 h-4 text-frontier sm:hidden" />
+        <span className="hidden sm:inline font-special">{truncateAddress(address)}</span>
         {balance && (
-          <span className="text-cream/70 text-xs font-special">{parseFloat(balance).toFixed(2)} XLM</span>
+          <span className="hidden sm:inline text-cream/70 text-xs font-special">{parseFloat(balance).toFixed(2)} XLM</span>
         )}
         <span className="text-wanted text-xs">▼</span>
       </button>

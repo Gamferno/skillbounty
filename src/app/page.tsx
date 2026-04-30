@@ -114,19 +114,19 @@ export default function HomePage() {
 
         {/* Stats */}
         {!loading && (
-          <div className="mt-12 inline-flex flex-wrap items-center justify-center gap-6 sm:gap-8 bg-wood-900/80 border-2 border-wood-700 shadow-xl rounded px-6 sm:px-8 py-4 mx-auto max-w-full backdrop-blur-sm">
+          <div className="mt-12 inline-flex items-center justify-center gap-4 sm:gap-8 bg-wood-900/80 border-2 border-wood-700 shadow-xl rounded px-4 sm:px-8 py-4 mx-auto max-w-full backdrop-blur-sm">
             <div className="text-center">
               <p className="text-3xl font-rye text-cream">{bounties.length}</p>
               <p className="text-xs font-special text-wanted mt-1 uppercase tracking-widest">Total</p>
             </div>
-            <div className="w-px h-10 bg-wood-700" />
+            <div className="hidden sm:block w-px h-10 bg-wood-700" />
             <div className="text-center">
               <p className="text-3xl font-rye text-cream">
                 {bounties.filter((b) => b.status === BountyStatus.Open).length}
               </p>
               <p className="text-xs font-special text-frontier mt-1 uppercase tracking-widest">Open</p>
             </div>
-            <div className="w-px h-10 bg-wood-700" />
+            <div className="hidden sm:block w-px h-10 bg-wood-700" />
             <div className="text-center">
               <p className="text-3xl font-rye text-cream">
                 {bounties.filter((b) => b.status === BountyStatus.Completed).length}

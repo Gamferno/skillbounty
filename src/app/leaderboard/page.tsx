@@ -69,8 +69,8 @@ export default function LeaderboardPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-12 pb-16">
       <div className="text-center pt-8 pb-4">
-        <h1 className="text-5xl font-rye text-cream tracking-widest uppercase text-shadow-md mb-4 flex items-center justify-center gap-4">
-          <Star className="w-8 h-8 text-wanted fill-wanted" /> Hall of Fame <Star className="w-8 h-8 text-wanted fill-wanted" />
+        <h1 className="text-3xl sm:text-5xl font-rye text-cream tracking-widest uppercase text-shadow-md mb-4 flex items-center justify-center gap-2 sm:gap-4">
+          <Star className="w-5 h-5 sm:w-8 sm:h-8 text-wanted fill-wanted shrink-0" /> Hall of Fame <Star className="w-5 h-5 sm:w-8 sm:h-8 text-wanted fill-wanted shrink-0" />
         </h1>
         <p className="text-cream/70 font-special max-w-xl mx-auto">
           The finest gunslingers and sheriffs in the territory. Based on recent on-chain contract activity.

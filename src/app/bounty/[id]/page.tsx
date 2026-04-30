@@ -116,15 +116,15 @@ export default function BountyDetailPage() {
           <div className="flex items-center gap-3 pb-4 border-b border-wood-700">
             <div>
               <p className="text-xs font-rye text-cream/50 uppercase tracking-widest mb-1">Reward</p>
-              <p className="text-4xl font-rye text-wanted leading-none">
-                {stroopsToXlm(bounty.reward)}
-                <span className="text-cream/60 text-xl font-rye ml-2">XLM</span>
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 leading-none">
+                <span className="text-4xl font-rye text-wanted leading-none">{stroopsToXlm(bounty.reward)}</span>
+                <span className="text-xl font-rye text-cream/60">XLM</span>
                 {xlmPrice && (
-                  <span className="text-cream/40 text-sm font-special ml-2">
+                  <span className="text-sm font-special text-cream/40">
                     (≈ ${(parseFloat(stroopsToXlm(bounty.reward)) * xlmPrice).toFixed(2)})
                   </span>
                 )}
-              </p>
+              </div>
             </div>
             {bounty.status === BountyStatus.Open && (
               <span className="ml-auto text-xs font-rye tracking-widest text-frontier bg-frontier/10 border border-frontier/30 rounded px-3 py-1">

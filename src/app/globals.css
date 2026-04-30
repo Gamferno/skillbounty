@@ -18,6 +18,7 @@
   body {
     background-color: #1a0f00; /* wood-900 */
     color: #f0e6d3; /* cream */
+    overflow-x: hidden;
   }
 
   /* Scrollbar styling - wooden rail feel */

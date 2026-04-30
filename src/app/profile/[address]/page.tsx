@@ -147,8 +147,8 @@ export default function ProfilePage() {
                 href={`/bounty/${b.id}`}
                 className="flex items-center justify-between gap-3 rounded wood-panel border border-wood-700 hover:border-wanted/40 px-4 py-3 transition-all"
               >
-                <div>
-                  <p className="text-sm font-rye text-cream">{b.title}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-rye text-cream truncate">{b.title}</p>
                   <p className="text-xs text-cream/40 mt-0.5 font-special">#{b.id.toString()}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
@@ -174,8 +174,8 @@ export default function ProfilePage() {
                 href={`/bounty/${b.id}`}
                 className="flex items-center justify-between gap-3 rounded wood-panel border border-wood-700 hover:border-frontier/40 px-4 py-3 transition-all"
               >
-                <div>
-                  <p className="text-sm font-rye text-cream">{b.title}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-rye text-cream truncate">{b.title}</p>
                   <p className="text-xs text-cream/40 mt-0.5 font-special">#{b.id.toString()}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
