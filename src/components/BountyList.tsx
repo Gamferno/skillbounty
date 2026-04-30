@@ -127,7 +127,7 @@ export function BountyList({ bounties, loading }: BountyListProps) {
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center wood-panel rounded p-8 border-4 border-wood-900 shadow-xl max-w-lg mx-auto">
           <span className="text-6xl mb-6 opacity-80"> tumbleweed </span>
-          <h2 className="text-3xl font-rye tracking-widest text-cream mb-2">Town's Quiet</h2>
+          <h2 className="text-3xl font-rye tracking-widest text-cream mb-2">Town&apos;s Quiet</h2>
           <p className="text-base font-special text-cream/70">
             {activeFilter === 'All' && !activeTag
               ? 'No bounties posted yet. Be the first!'

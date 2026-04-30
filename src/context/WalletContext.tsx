@@ -35,8 +35,7 @@ const WalletContext = createContext<WalletContextType | null>(null)
  * Next.js static generation. Lazy importing prevents that.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let KitModule: any = null
+let KitModule: any = null // lazy-loaded; avoids SSR crash (localStorage at module level)
 
 async function loadKit() {
   if (KitModule) return KitModule
